@@ -2,11 +2,12 @@
  */
 window.onload = function() {
 
-    var gridWidth = 20;
-    var gridHeight = 20;
+    var gridWidth = 10;
+    var gridHeight = 10;
 
-    var COLS = 200;
-    var ROWS =  150;
+    // var BOARDWIDTH = 100;
+    var COLS = 100;
+    var ROWS =  70;
     var DELAY = 100;
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
@@ -96,6 +97,20 @@ window.onload = function() {
             }
         }
     }
+
+    // engine.addEntityToScreen(new StartScreen());
+    document.addEventListener("click", function(event) {
+     var mousePos = engine.getMousePos(event);
+    console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+    var x = Math.floor(mousePos.x / 10);
+    var y = Math.floor(mousePos.y / 10);
+    console.log('x: ' + x + ' y: ' + y);
+     cells[x][y].alive = true;
+     cells[x][y].color = 255;
+    });
+
+    // engine.addEntityToScreen(new PatternPanel());
+
 
 
 }
