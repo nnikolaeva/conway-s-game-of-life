@@ -2,12 +2,12 @@
  */
 window.onload = function() {
 
-    var gridWidth = 10;
-    var gridHeight = 10;
+    var gridWidth = 5;
+    var gridHeight = 5;
 
     // var BOARDWIDTH = 100;
-    var COLS = 100;
-    var ROWS =  70;
+    var COLS = 200;
+    var ROWS =  140;
     var DELAY = 100;
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
@@ -68,9 +68,16 @@ window.onload = function() {
 
     var cellManager = new CellManager(cells, gridWidth, gridHeight);
     engine.addEntityToScreen(cellManager);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", cellManager, cellManager.onMouseClick.bind(cellManager)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousemove", cellManager, cellManager.onMouseMove.bind(cellManager)));
 
+    var pattern = new Pattern(100, 0);
+    engine.addEntityToScreen(pattern);
+    // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousedown", pattern, pattern.onMouseDown.bind(patter)));
 
-    setInterval(createNewGeneration, DELAY);
+    function startButtonCallback() {
+        setInterval(createNewGeneration, DELAY);   
+    }
 
     var count;
     var cell;
@@ -98,18 +105,20 @@ window.onload = function() {
         }
     }
 
-    // engine.addEntityToScreen(new StartScreen());
-    document.addEventListener("click", function(event) {
-     var mousePos = engine.getMousePos(event);
-    console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
-    var x = Math.floor(mousePos.x / 10);
-    var y = Math.floor(mousePos.y / 10);
-    console.log('x: ' + x + ' y: ' + y);
-     cells[x][y].alive = true;
-     cells[x][y].color = 255;
-    });
+    engine.addEntityToScreen(new PatternPanel(startButtonCallback));
+    var startButton = new Button(100, 60, 10, 5, "white", startButtonCallback);
+    engine.addEntityToScreen(startButton);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));
 
-    // engine.addEntityToScreen(new PatternPanel());
+    document.addEventListener("click", function(event) {
+        engine.handleMouseEvent("click", event);
+    });
+    document.addEventListener("mousemove", function(event) {
+        engine.handleMouseEvent("mousemove", event);
+    });
+    document.addEventListener("mousedown", function(event) {
+        engine.handleMouseEvent("mousedown", event);
+    });
 
 
 
