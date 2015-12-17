@@ -1,22 +1,19 @@
-var Cell = function(x, y, active) {
-    this.x = x;
-    this.y = y;
-    this.alive = active;
-    this.width = 1;
-    this.height = 1;
-    this.color = active ? 255 : 0;
-    this.inactiveColor = "black";
-    this.aliveColor = "white"
+var Cell = function(alive) {
+    this.alive = alive;
+    this.deadColor = 0;
+    this.aliveColor = 255;
+    this.color = alive ? this.aliveColor : this.deadColor;
     this.neighbours = [];
 
     this.toggle = function() {
         this.alive = (!this.alive);
-        this.color = this.alive ? 255 : 0;
+        this.color = this.alive ? this.aliveColor : this.deadColor;
     };
 
     this.addNeighbour = function(cell) {
         this.neighbours.push(cell);
     };
+
     this.getActiveNeighbours = function() {
         var count = 0;
         for (var i = 0; i < this.neighbours.length; i++) {
@@ -26,28 +23,21 @@ var Cell = function(x, y, active) {
         }
         return count;
     };
-
-    this.update = function(dt) {};
-    this.render = function(engine) {
-        // this.color = this.alive ? 255 : 0;
-        // engine.drawPixel(this.pixelIndex, this.color);
-        // this.color = this.alive ? this.aliveColor : this.inactiveColor;
-        // engine.drawRect(this.x, this.y, this.width, this.height, this.color);
-
-    };
-
 };
 
-var CellManager = function(cells) {
-    this.x = 0;
-    this.y = 0;
-    this.w = 100;
-    this.h = 70;
+var Entity = function(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.update = function(dt) {};
+    this.render = function(engine) {};
+};
+
+var CellManager = function(cells, dx, w, h) {
+    Entity.call(this, dx, 0, w, h);
     this.cells = cells;
     this.selectedCell;
-    this.setCells = function(cellsArray) {
-        this.cells = cellsArray;
-    };
     this.onMouseMove = function(x, y) {
         if (typeof(this.selectedCell) !== "undefined") {
             this.selectedCell.color = this.selectedCell.alive ? 255 : 0;
@@ -58,27 +48,19 @@ var CellManager = function(cells) {
     this.onMouseClick = function(x, y) {
         cells[x][y].toggle();
     }
-    this.update = function(dt) {};
     this.render = function(engine) {
-        engine.drawPixels(this.cells);
+        engine.drawPixels(this.cells, this.x, this.y);
     };
 };
 
-var Pattern = function(x, y) {
-    this.x = x;
-    this.y = y;
-    this.width = 3;
-    this.height = 3;
-    this.color = "blue";
-    this.components  = [];
+var Pattern = function(x, y, w, h) {
+    Control.call(this, x, y, w, h);
+    this.color = "white";
     this.dragged = false;
     this.strPattern = "000111000";
-
-
-
-    this.update = function(dt) {};
     this.render = function(engine) {
-        engine.drawRect(100, 0, 5, 5, "blue");
+        engine.drawRect(this.x, this.y, this.w, this.h, this.color);
+        engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
         // var index = 0;
         // var color;
         // for (var i = 0; i < this.width; i++) {
@@ -90,13 +72,10 @@ var Pattern = function(x, y) {
         // }
     };
 };
-var Button = function(x, y, width, height, color, startButtonCallback) {
-    this.x = x;
-    this.y = y;
-    this.w = width;
-    this.h = height;
-    this.color = color;
-    this.selectedColor = "yellow";
+
+var Control = function(x, y, w, h) {
+    Entity.call(this, x, y, w, h);
+    this.selectedColor = "#FFC";
     this.notSelectedColor = "white";
     this.selected = false;
     this.select = function() {
@@ -108,77 +87,152 @@ var Button = function(x, y, width, height, color, startButtonCallback) {
         this.selected = false;
         this.color = this.notSelectedColor;
     };
+
+}
+var Button = function(x, y, w, h, text, startButtonCallback) {
+    Control.call(this, x, y, w, h);
+    this.color = "white";
+    this.text = text;
     this.onClick = startButtonCallback;
-    this.update = function(dt) {};
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
-        engine.drawText(this.x + 1, this.y + 4, "start", "grey", "30px verdana");
+        engine.drawText(this.x, this.y + 5, this.text, "grey", "30px verdana");
     };
 };
 
-var PatternPanel = function(startButtonCallback) {
-    this.x = 100;
-    this.y = 0;
-    this.w = 10;
-    this.h = 70;
-    this.patterns = [new Pattern(100, 0)];
-    this.getPatternCopy = function(x, y) {
-        var p;
-        for (var i = 0; i < this.patterns.length; i++) {
-            p = this.patterns[i];
-            if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
-                var copyPatern = new Pattern(p.x, p.y);
-                this.patterns.push(copyPatern);
-                return copyPatern;
+var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clearButtonCallback, randButtonCallback) {
+    Entity.call(this, 0, 0, w, h);
+    this.color = "#CCC";
+    this.components = [];
+    this.buttonX = this.x + 1;
+    this.buttonY = this.y + 1;
+    this.buttonWidth = 18;
+    this.buttonHeight = 6;
+    this.startButton = new Button(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight, "start", startButtonCallback);
+    this.components.push(this.startButton);
+
+    this.stopButton = new Button(this.buttonX, this.buttonY + this.buttonHeight + 1, this.buttonWidth, this.buttonHeight, "pause", stopButtonCallback);
+    this.components.push(this.stopButton);
+
+    this.clearButton = new Button(this.buttonX, this.buttonY + 2 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, "clear", clearButtonCallback);
+    this.components.push(this.clearButton);
+
+    this.randButton = new Button(this.buttonX, this.buttonY + 3 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, "rand", randButtonCallback);
+    this.components.push(this.randButton);
+
+    this.glider = new Pattern(this.buttonX, this.buttonY + 4 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight);
+    this.components.push(this.glider);
+
+    this.selected = null;
+
+    this.getSelectedComponent = function(x, y) {
+        var c;
+        for (var i in this.components) {
+            c = this.components[i];
+            if (x >= c.x && x < c.x + c.w && y >= c.y && y < c.y + c.h) {
+                return c;
             }
         }
-    };
-    this.getDraggedPattern = function() {
-        var p;
-        for (var i = 0; i < this.patterns.length; i++) {
-            p = this.patterns[i];
-            if (p.dragged === true) {
-                return p;
-            }
-        }
-    };
-    this.deletePattern = function() {
-        this.patterns.pop();    
-        
-    };
-   
-    this.button = new Button(100, 60, 10, 5, "white", startButtonCallback);
+        return null;
+
+    }
+
     this.onMouseMove = function(x, y) {
-        if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
-            this.button.select();
+        if (this.selected instanceof Pattern && this.selected.dragged === true) {
+            this.selected.x = x;
+            this.selected.y = y;
         } else {
-            this.button.deSelect();
-        }
-    }
-    this.onMouseClick = function(x, y) {
-        if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
-            this.button.onClick();
-        } 
-    }
-    this.onMouseDown = function(x, y) {
-        var p;
-        for (var i in this.patterns) {
-            p = this.patterns[i];
-            if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
-                p.dragged = true;
+        var c = this.getSelectedComponent(x - this.x, y - this.y);
+        if (c !== this.selected) {
+            if (c !== null) {
+                c.select();
             }
+            if (this.selected !== null) {
+                this.selected.deSelect();
+            }
+            this.selected = c;
         }
+            
+        }
+
     }
-    this.update = function(dt) {};
+
+    this.onMouseClick = function() {
+        if (this.selected instanceof Button) {
+            this.selected.onClick();
+        }
+    };
+    this.onMouseDown = function() {
+        if (this.selected instanceof Pattern) {
+            this.selected.dragged = true;
+        }
+    };
     this.render = function(engine) {
-        engine.drawRect(100, 0, 10, 70, "grey");
-        this.button.render(engine);
+        engine.drawRect(this.x, this.y, this.w, this.h, this.color);
+        for (var i = 0; i < this.components.length; i++) {
+            this.components[i].render(engine);
+        }
+    };
+
+
+    // this.patterns = [new Pattern(100, 0)];
+    // this.getPatternCopy = function(x, y) {
+    //     var p;
+    //     for (var i = 0; i < this.patterns.length; i++) {
+    //         p = this.patterns[i];
+    //         if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
+    //             var copyPatern = new Pattern(p.x, p.y);
+    //             this.patterns.push(copyPatern);
+    //             return copyPatern;
+    //         }
+    //     }
+    // };
+    // this.getDraggedPattern = function() {
+    //     var p;
+    //     for (var i = 0; i < this.patterns.length; i++) {
+    //         p = this.patterns[i];
+    //         if (p.dragged === true) {
+    //             return p;
+    //         }
+    //     }
+    // };
+    // this.deletePattern = function() {
+    //     this.patterns.pop();    
+        
+    // };
+   
+    // this.button = new Button(100, 60, 10, 5, "white", startButtonCallback);
+    // this.onMouseMove = function(x, y) {
+    //     console.log("patternPanel");
+    //     if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
+    //         this.button.select();
+    //     } else {
+    //         this.button.deSelect();
+    //     }
+    // }
+    // this.onMouseClick = function(x, y) {
+    //     if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
+    //         this.button.onClick();
+    //     } 
+    // }
+    // this.onMouseDown = function(x, y) {
+    //     var p;
+    //     for (var i in this.patterns) {
+    //         p = this.patterns[i];
+    //         if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
+    //             p.dragged = true;
+    //         }
+    //     }
+    // }
+    // this.render = function(engine) {
+    //     engine.drawRect(this.x, this.y, this.w, this.h, this.color);
+    //     //this.button.render(engine);
 
         
-        for (var i = 0; i < this.patterns.length; i++) {
-            this.patterns[i].render(engine);
-        }
-    };
+    //     // for (var i = 0; i < this.patterns.length; i++) {
+    //     //     this.patterns[i].render(engine);
+    //     // }
+    // };
 
 };
 

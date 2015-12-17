@@ -5,22 +5,35 @@ window.onload = function() {
     var gridWidth = 5;
     var gridHeight = 5;
 
-    // var BOARDWIDTH = 100;
     var COLS = 200;
-    var ROWS =  140;
+    var ROWS = 140;
     var DELAY = 100;
+
+    var PATTERN_PANEL_WIDTH = 20;
+
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
     engine.load();
+
+    document.addEventListener("click", function(event) {
+        engine.handleMouseEvent("click", event);
+    });
+    document.addEventListener("mousemove", function(event) {
+        engine.handleMouseEvent("mousemove", event);
+    });
+    document.addEventListener("mousedown", function(event) {
+        engine.handleMouseEvent("mousedown", event);
+    });
 
     var cells = [];
 
     for (var x = 0; x < COLS; x++) {
         cells[x] = [];
         for (var y = 0; y < ROWS; y++) {
-            cells[x][y] = new Cell(x, y, Math.random() < 0.5);
+            cells[x][y] = new Cell(Math.random() < 0.5);
         }
     }
+    console.log(cells.length);
 
     // add neighbours to each cell
     var cell;
@@ -66,22 +79,8 @@ window.onload = function() {
         newStates[x] = new Array(ROWS);
     }
 
-    var cellManager = new CellManager(cells, gridWidth, gridHeight);
-    engine.addEntityToScreen(cellManager);
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", cellManager, cellManager.onMouseClick.bind(cellManager)));
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousemove", cellManager, cellManager.onMouseMove.bind(cellManager)));
-
-    var pattern = new Pattern(100, 0);
-    engine.addEntityToScreen(pattern);
-    // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousedown", pattern, pattern.onMouseDown.bind(patter)));
-
-    function startButtonCallback() {
-        setInterval(createNewGeneration, DELAY);   
-    }
-
     var count;
     var cell;
-
     function createNewGeneration() {
         for (var x = 0; x < COLS; x++) {
             for (var y = 0; y < ROWS; y++) {
@@ -104,21 +103,54 @@ window.onload = function() {
             }
         }
     }
+    var intervalId;
+    function start() {
+        intervalId = setInterval(createNewGeneration, DELAY);   
+    }
 
-    engine.addEntityToScreen(new PatternPanel(startButtonCallback));
-    var startButton = new Button(100, 60, 10, 5, "white", startButtonCallback);
-    engine.addEntityToScreen(startButton);
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));
+    function stop() {
+        clearInterval(intervalId);
+    }
 
-    document.addEventListener("click", function(event) {
-        engine.handleMouseEvent("click", event);
-    });
-    document.addEventListener("mousemove", function(event) {
-        engine.handleMouseEvent("mousemove", event);
-    });
-    document.addEventListener("mousedown", function(event) {
-        engine.handleMouseEvent("mousedown", event);
-    });
+    function clear() {
+        for (var x = 0; x < COLS; x++) {
+            for (var y = 0; y < ROWS; y++) {
+                cells[x][y].alive = false;
+                cells[x][y].color = 0;
+
+            }
+        }
+    }
+
+    function rand() {
+        for (var x = 0; x < COLS; x++) {
+            for (var y = 0; y < ROWS; y++) {
+                cells[x][y].alive = Math.random() < 0.5;
+                cells[x][y].color = cells[x][y].alive ? 255 : 0;
+
+            }
+        }
+
+    }
+
+    // add cells to the screen
+    var cellManager = new CellManager(cells, PATTERN_PANEL_WIDTH, COLS - PATTERN_PANEL_WIDTH, ROWS);
+    engine.addEntityToScreen(cellManager);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", cellManager, cellManager.onMouseClick.bind(cellManager)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousemove", cellManager, cellManager.onMouseMove.bind(cellManager)));
+
+    // add panel with patterns and buttons to the screen
+    var patternPanel = new PatternPanel(PATTERN_PANEL_WIDTH, ROWS, start, stop, clear, rand);
+    engine.addEntityToScreen(patternPanel);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousemove", patternPanel, patternPanel.onMouseMove.bind(patternPanel)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", patternPanel, patternPanel.onMouseClick.bind(patternPanel)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousedown", patternPanel, patternPanel.onMouseDown.bind(patternPanel)));
+
+    // var startButton = new Button(100, 60, 10, 5, "white", start);
+    // engine.addEntityToScreen(startButton);
+    // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));
+
+    
 
 
 
