@@ -24,6 +24,9 @@ window.onload = function() {
     document.addEventListener("mousedown", function(event) {
         engine.handleMouseEvent("mousedown", event);
     });
+    document.addEventListener("mouseup", function(event) {
+        engine.handleMouseEvent("mouseup", event);
+    });
 
     var cells = [];
 
@@ -146,6 +149,9 @@ window.onload = function() {
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", patternPanel, patternPanel.onMouseClick.bind(patternPanel)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousedown", patternPanel, patternPanel.onMouseDown.bind(patternPanel)));
 
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", cellManager, function(x, y) {
+        console.log("dragover at (" + x + "," + y + ")")
+    }))
     // var startButton = new Button(100, 60, 10, 5, "white", start);
     // engine.addEntityToScreen(startButton);
     // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));

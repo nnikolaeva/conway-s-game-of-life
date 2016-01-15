@@ -32,9 +32,13 @@ var Entity = function(x, y, w, h) {
     this.h = h;
     this.update = function(dt) {};
     this.render = function(engine) {};
+    this.getChildEntity = function(x, y) {
+        return null;
+    };
 };
 
 var CellManager = function(cells, dx, w, h) {
+    this.id = "cm"
     Entity.call(this, dx, 0, w, h);
     this.cells = cells;
     this.selectedCell;
@@ -54,10 +58,12 @@ var CellManager = function(cells, dx, w, h) {
 };
 
 var Pattern = function(x, y, w, h) {
+    this.id = "pattern";
     Control.call(this, x, y, w, h);
     this.color = "white";
     this.dragged = false;
     this.strPattern = "000111000";
+    this.isDraggable = true;
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
         engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
@@ -101,6 +107,7 @@ var Button = function(x, y, w, h, text, startButtonCallback) {
 };
 
 var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clearButtonCallback, randButtonCallback) {
+    this.id = "pp";
     Entity.call(this, 0, 0, w, h);
     this.color = "#CCC";
     this.components = [];
@@ -137,10 +144,10 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
 
     }
 
+    this.getChildEntity = this.getSelectedComponent;
+
     this.onMouseMove = function(x, y) {
         if (this.selected instanceof Pattern && this.selected.dragged === true) {
-            this.selected.x = x;
-            this.selected.y = y;
         } else {
         var c = this.getSelectedComponent(x - this.x, y - this.y);
         if (c !== this.selected) {
@@ -173,66 +180,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
             this.components[i].render(engine);
         }
     };
-
-
-    // this.patterns = [new Pattern(100, 0)];
-    // this.getPatternCopy = function(x, y) {
-    //     var p;
-    //     for (var i = 0; i < this.patterns.length; i++) {
-    //         p = this.patterns[i];
-    //         if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
-    //             var copyPatern = new Pattern(p.x, p.y);
-    //             this.patterns.push(copyPatern);
-    //             return copyPatern;
-    //         }
-    //     }
-    // };
-    // this.getDraggedPattern = function() {
-    //     var p;
-    //     for (var i = 0; i < this.patterns.length; i++) {
-    //         p = this.patterns[i];
-    //         if (p.dragged === true) {
-    //             return p;
-    //         }
-    //     }
-    // };
-    // this.deletePattern = function() {
-    //     this.patterns.pop();    
-        
-    // };
-   
-    // this.button = new Button(100, 60, 10, 5, "white", startButtonCallback);
-    // this.onMouseMove = function(x, y) {
-    //     console.log("patternPanel");
-    //     if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
-    //         this.button.select();
-    //     } else {
-    //         this.button.deSelect();
-    //     }
-    // }
-    // this.onMouseClick = function(x, y) {
-    //     if (x >= this.button.x && x <= this.button.x + this.button.w && y >= this.button.y && y <= this.button.y + this.button.h) {
-    //         this.button.onClick();
-    //     } 
-    // }
-    // this.onMouseDown = function(x, y) {
-    //     var p;
-    //     for (var i in this.patterns) {
-    //         p = this.patterns[i];
-    //         if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
-    //             p.dragged = true;
-    //         }
-    //     }
-    // }
-    // this.render = function(engine) {
-    //     engine.drawRect(this.x, this.y, this.w, this.h, this.color);
-    //     //this.button.render(engine);
-
-        
-    //     // for (var i = 0; i < this.patterns.length; i++) {
-    //     //     this.patterns[i].render(engine);
-    //     // }
-    // };
 
 };
 
