@@ -150,8 +150,14 @@ window.onload = function() {
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousedown", patternPanel, patternPanel.onMouseDown.bind(patternPanel)));
 
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", cellManager, function(x, y) {
-        console.log("dragover at (" + x + "," + y + ")")
-    }))
+        console.log("cm dragover at (" + x + "," + y + ")")
+    }));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", patternPanel, patternPanel.onDragOver.bind(patternPanel)));
+
+    var pattern = new Pattern(0, 0, 0, 0);
+    patternPanel.addPattern(pattern);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", pattern, pattern.onDragStart.bind(pattern)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", patternPanel, patternPanel.onDragStart.bind(patternPanel)));
     // var startButton = new Button(100, 60, 10, 5, "white", start);
     // engine.addEntityToScreen(startButton);
     // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));

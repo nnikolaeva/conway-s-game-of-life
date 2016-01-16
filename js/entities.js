@@ -77,6 +77,11 @@ var Pattern = function(x, y, w, h) {
         //     }
         // }
     };
+
+    this.onDragStart = function(x, y, dragStateData) {
+        var copy = new Pattern(this.x, this.y, this.w, this.h);
+        dragStateData.draggedEntity = copy;
+    };
 };
 
 var Control = function(x, y, w, h) {
@@ -127,10 +132,18 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     this.randButton = new Button(this.buttonX, this.buttonY + 3 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, "rand", randButtonCallback);
     this.components.push(this.randButton);
 
-    this.glider = new Pattern(this.buttonX, this.buttonY + 4 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight);
-    this.components.push(this.glider);
+    // this.glider = new Pattern(this.buttonX, this.buttonY + 4 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight);
+    // this.components.push(this.glider);
 
     this.selected = null;
+
+    this.addPattern = function(pattern) {
+        pattern.x = this.buttonX;
+        pattern.y = this.buttonY + 4 * (this.buttonHeight + 1);
+        pattern.w = this.buttonWidth;
+        pattern.h = this.buttonHeight;
+        this.components.push(pattern);
+    };
 
     this.getSelectedComponent = function(x, y) {
         var c;
@@ -174,11 +187,38 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
             this.selected.dragged = true;
         }
     };
+
+    this.isExistedComponent = function(component) {
+        var c;
+        for (var i in this.components) {
+            c = this.components[i];
+            if (c === component) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+
+    this.onDragStart = function(x, y, dragStateData) {
+        console.log("in pp: PatternPanel");
+        if (!this.isExistedComponent(dragStateData.draggedEntity)) {
+            this.components.push(dragStateData.draggedEntity);
+        }
+    };
+
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].render(engine);
         }
+    };
+
+    this.onDragOver = function(x, y, dragStateData) {
+        console.log(this.components);
+        dragStateData.draggedEntity.x = x;
+        dragStateData.draggedEntity.y = y;
+
     };
 
 };
