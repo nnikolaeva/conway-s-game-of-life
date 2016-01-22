@@ -139,7 +139,7 @@ window.onload = function() {
     // add cells to the screen
     var cellManager = new CellManager(cells, PATTERN_PANEL_WIDTH, COLS - PATTERN_PANEL_WIDTH, ROWS);
     engine.addEntityToScreen(cellManager);
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", cellManager, cellManager.onMouseClick.bind(cellManager)));
+    // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", cellManager, cellManager.onMouseUp.bind(cellManager)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("mousemove", cellManager, cellManager.onMouseMove.bind(cellManager)));
 
     // add panel with patterns and buttons to the screen
@@ -154,6 +154,7 @@ window.onload = function() {
     // }));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", patternPanel, patternPanel.onDragOver.bind(patternPanel)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", cellManager, cellManager.onDragOver.bind(cellManager)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragend", cellManager, cellManager.onDragEnd.bind(cellManager)));
 
     var pattern = new Pattern(0, 0, 0, 0);
     patternPanel.addPattern(pattern);

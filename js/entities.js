@@ -43,15 +43,13 @@ var CellManager = function(cells, dx, w, h) {
     this.cells = cells;
     this.selectedCell;
     this.onMouseMove = function(x, y) {
-        if (typeof(this.selectedCell) !== "undefined") {
-            this.selectedCell.color = this.selectedCell.alive ? 255 : 0;
-        }
-        cells[x][y].color = 200;
-        this.selectedCell = cells[x][y];
+        // if (typeof(this.selectedCell) !== "undefined") {
+        //     this.selectedCell.color = this.selectedCell.alive ? 255 : 0;
+        // }
+        // cells[x][y].color = 200;
+        // this.selectedCell = cells[x][y];
     }
-    this.onMouseClick = function(x, y) {
-        cells[x][y].toggle();
-    }
+
     this.render = function(engine) {
         engine.drawPixels(this.cells, this.x, this.y);
     };
@@ -62,13 +60,12 @@ var CellManager = function(cells, dx, w, h) {
         }
         this.draggedTrace.length = 0;
     };
-    
+
     this.onDragOver = function(x, y, dragStateData) {
         this.clearDraggedTrace();
         var index = 0;
         for (var i = 0; i < 3; i++) {
             for (var j = 0; j < 3; j++) {
-                console.log(dragStateData.draggedEntityData[index]);
                 if (dragStateData.draggedEntityData[index] === "1") {
                     cells[x + i][y + j].color = 200;
                     this.draggedTrace.push(cells[x + i][y + j]);
@@ -76,7 +73,14 @@ var CellManager = function(cells, dx, w, h) {
                     index ++;
             }
         }
+    };
 
+    this.onDragEnd = function() {
+        for (var i in this.draggedTrace) {
+            this.draggedTrace[i].alive = true;
+            this.draggedTrace[i].color = 255;
+        }
+        this.draggedTrace.length = 0;
     };
 };
 
@@ -85,7 +89,7 @@ var Pattern = function(x, y, w, h) {
     Control.call(this, x, y, w, h);
     this.color = "white";
     this.dragged = false;
-    this.strPattern = "000111000";
+    this.strPattern = "001101011";
     this.isDraggable = true;
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
@@ -169,9 +173,7 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     this.getChildEntity = this.getSelectedComponent;
 
     this.onMouseMove = function(x, y) {
-        if (this.selected instanceof Pattern && this.selected.dragged === true) {
-        } else {
-            var c = this.getSelectedComponent(x - this.x, y - this.y);
+        var c = this.getSelectedComponent(x - this.x, y - this.y);
             if (c !== this.selected) {
                 if (c !== null) {
                     c.select();
@@ -181,8 +183,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
                 }
                 this.selected = c;
             }
-        }
-
     }
 
     this.onMouseClick = function() {
