@@ -55,9 +55,28 @@ var CellManager = function(cells, dx, w, h) {
     this.render = function(engine) {
         engine.drawPixels(this.cells, this.x, this.y);
     };
-
+    this.draggedTrace = [];
+    this.clearDraggedTrace = function() {
+        for (var i in this.draggedTrace) {
+            this.draggedTrace[i].color = this.draggedTrace[i].alive ? 255 : 0;
+        }
+        this.draggedTrace.length = 0;
+    };
+    
     this.onDragOver = function(x, y, dragStateData) {
-        console.log(dragStateData.draggedEntity);
+        this.clearDraggedTrace();
+        var index = 0;
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                console.log(dragStateData.draggedEntityData[index]);
+                if (dragStateData.draggedEntityData[index] === "1") {
+                    cells[x + i][y + j].color = 200;
+                    this.draggedTrace.push(cells[x + i][y + j]);
+                }
+                    index ++;
+            }
+        }
+
     };
 };
 
@@ -74,7 +93,7 @@ var Pattern = function(x, y, w, h) {
     };
 
     this.onDragIn = function(x, y, dragStateData) {
-        dragStateData.draggedEntity = this.strPattern;
+        dragStateData.draggedEntityData = this.strPattern;
     };
 };
 
