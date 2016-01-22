@@ -63,14 +63,21 @@ var CellManager = function(cells, dx, w, h) {
 
     this.onDragOver = function(x, y, dragStateData) {
         this.clearDraggedTrace();
-        var index = 0;
-        for (var i = 0; i < 3; i++) {
-            for (var j = 0; j < 3; j++) {
-                if (dragStateData.draggedEntityData[index] === "1") {
-                    cells[x + i][y + j].color = 200;
-                    this.draggedTrace.push(cells[x + i][y + j]);
-                }
-                    index ++;
+        var str = dragStateData.draggedEntityData;
+        var c;
+        var px = 0;
+        var py = 0;
+        for (var i in str) {
+            c = str[i];
+            if (c === "*") {
+                cells[x + px][y + py].color = 200;
+                this.draggedTrace.push(cells[x + px][y + py]);
+                px ++;
+            } else if (c === ".") {
+                px ++;
+            } else if (c === "\n") {
+                py ++;
+                px = 0;
             }
         }
     };
@@ -89,7 +96,7 @@ var Pattern = function(x, y, w, h) {
     Control.call(this, x, y, w, h);
     this.color = "white";
     this.dragged = false;
-    this.strPattern = "001101011";
+    this.strPattern = "..*\n*.*\n.**";
     this.isDraggable = true;
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
