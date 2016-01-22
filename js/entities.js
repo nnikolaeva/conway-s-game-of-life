@@ -55,6 +55,10 @@ var CellManager = function(cells, dx, w, h) {
     this.render = function(engine) {
         engine.drawPixels(this.cells, this.x, this.y);
     };
+
+    this.onDragOver = function(x, y, dragStateData) {
+        console.log(dragStateData.draggedEntity);
+    };
 };
 
 var Pattern = function(x, y, w, h) {
@@ -67,20 +71,10 @@ var Pattern = function(x, y, w, h) {
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
         engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
-        // var index = 0;
-        // var color;
-        // for (var i = 0; i < this.width; i++) {
-        //     for (var j  = 0; j < this.height; j++) {
-        //         color = parseInt(this.strPattern[index]) ?  "yellow" : "#f0f0f5";
-        //         engine.drawRect(this.x + i, this.y + j, 1, 1, color);
-        //         index++;
-        //     }
-        // }
     };
 
-    this.onDragStart = function(x, y, dragStateData) {
-        var copy = new Pattern(this.x, this.y, this.w, this.h);
-        dragStateData.draggedEntity = copy;
+    this.onDragIn = function(x, y, dragStateData) {
+        dragStateData.draggedEntity = this.strPattern;
     };
 };
 
@@ -90,7 +84,6 @@ var Control = function(x, y, w, h) {
     this.notSelectedColor = "white";
     this.selected = false;
     this.select = function() {
-        console.log("selected");
         this.selected = true;
         this.color = this.selectedColor;
     };
@@ -132,9 +125,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     this.randButton = new Button(this.buttonX, this.buttonY + 3 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, "rand", randButtonCallback);
     this.components.push(this.randButton);
 
-    // this.glider = new Pattern(this.buttonX, this.buttonY + 4 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight);
-    // this.components.push(this.glider);
-
     this.selected = null;
 
     this.addPattern = function(pattern) {
@@ -162,17 +152,16 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     this.onMouseMove = function(x, y) {
         if (this.selected instanceof Pattern && this.selected.dragged === true) {
         } else {
-        var c = this.getSelectedComponent(x - this.x, y - this.y);
-        if (c !== this.selected) {
-            if (c !== null) {
-                c.select();
+            var c = this.getSelectedComponent(x - this.x, y - this.y);
+            if (c !== this.selected) {
+                if (c !== null) {
+                    c.select();
+                }
+                if (this.selected !== null) {
+                    this.selected.deSelect();
+                }
+                this.selected = c;
             }
-            if (this.selected !== null) {
-                this.selected.deSelect();
-            }
-            this.selected = c;
-        }
-            
         }
 
     }
@@ -201,10 +190,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
 
 
     this.onDragStart = function(x, y, dragStateData) {
-        console.log("in pp: PatternPanel");
-        if (!this.isExistedComponent(dragStateData.draggedEntity)) {
-            this.components.push(dragStateData.draggedEntity);
-        }
     };
 
     this.render = function(engine) {
@@ -215,10 +200,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     };
 
     this.onDragOver = function(x, y, dragStateData) {
-        console.log(this.components);
-        dragStateData.draggedEntity.x = x;
-        dragStateData.draggedEntity.y = y;
-
     };
 
 };
