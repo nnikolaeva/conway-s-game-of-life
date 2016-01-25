@@ -91,16 +91,52 @@ var CellManager = function(cells, dx, w, h) {
     };
 };
 
+function simpleSprite(image) {
+    return sprite(image, 0, 0, defaultBoundingBox());
+}
+
+function sprite(image, dx, dy, boundingBox) {
+    return {
+        image: image,
+        dx: dx,
+        dy: dy,
+        bbox: boundingBox
+    };
+}
+
+function defaultBoundingBox() {
+    return boundingBox(0, 0, 1, 1);
+}
+
+function boundingBox(x, y, w, h) {
+    return {
+        x: x,
+        y: y,
+        w: w,
+        h: h
+    };
+}
+
 var Pattern = function(x, y, w, h) {
     this.id = "pattern";
     Control.call(this, x, y, w, h);
     this.color = "white";
     this.dragged = false;
-    this.strPattern = "..*\n*.*\n.**";
+    this.sprite = simpleSprite('images/osc-star.png');
+    // this.strPattern = "..*\n*.*\n.**";
+    // this.strPattern = "......*..\n.****...*\n....*...*\n........*\n.....*...\n......**.";
+    // this.strPattern = "...****..\n...*..*..\n.***..***\n.*......*\n.*......*\n.***..***\n...*..*..\n...****..\n";
+    // this.strPattern = "..........................*..........\n.......................****....*.....\n..............*.......****.....*.....\n.............*.*......*..*.........**\n............*...**....****.........**\n.**.........*...**.....****..........\n.**.........*...**........*..........\n.............*.*.....................\n..............*......................\n";
+    // this.strPattern = "...*\n....*\n*...*\n.****\n";
+    // this.strPattern = ".**....*\n..*..***\n..*.*...\n...*.*..\n....*.*.\n.***..*.\n.*....**\n"; //spiral
+    // this.strPattern = "......*.....\n.....***....\n...***.***..\n...*.....*..\n..**.....**.\n.**.......**\n..**.....**.\n...*.....*..\n...***.***..\n.....***....\n......*.....\n";
+    this.strPattern = "...........*....................\n...........*...............**...\n.......**.*.***..........**...*.\n.*.**.**.**..*.*...**.****......\n.*...**..*.**..***..*.**..**...*\n.*.**....***.*.***......**..*...\n.........**.*...............*..*\n.*.**....***.*.***......**..*...\n.*...**..*.**..***..*.**..**...*\n.*.**.**.**..*.*...**.****......\n.......**.*.***..........**...*.\n...........*...............**...\n...........*....................\n";
     this.isDraggable = true;
     this.render = function(engine) {
-        engine.drawRect(this.x, this.y, this.w, this.h, this.color);
-        engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
+        // engine.drawRect(this.x, this.y, this.w, this.h, this.color);
+        // engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
+
+        engine.drawImage(this.sprite, this.x, this.y);
     };
 
     this.onDragIn = function(x, y, dragStateData) {
