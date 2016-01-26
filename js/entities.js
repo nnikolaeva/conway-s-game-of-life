@@ -132,9 +132,8 @@ var Pattern = function(x, y, w, h, image, str) {
     this.deSelect = function() {
     };
     
-    this.onDragIn = function(x, y, dragStateData) {
+    this.onDragStart = function(x, y, dragStateData) {
         dragStateData.draggedEntityData = this.strPattern;
-        console.log(dragStateData);
     };
 
     this.render = function(engine) {

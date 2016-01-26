@@ -155,10 +155,10 @@ window.onload = function() {
     var starPattern = new Pattern(1, 30, 6, 6, "images/osc-star.png", "......*.....\n.....***....\n...***.***..\n...*.....*..\n..**.....**.\n.**.......**\n..**.....**.\n...*.....*..\n...***.***..\n.....***....\n......*.....\n");
     patternPanel.addPattern(starPattern);
 
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragin", starPattern, starPattern.onDragIn.bind(starPattern)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", starPattern, starPattern.onDragStart.bind(starPattern)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", patternPanel, patternPanel.onDragStart.bind(patternPanel)));
 
     var gliderPattern = new Pattern(8, 30, 6, 6, "images/glider.png", "..*\n*.*\n.**");
     patternPanel.addPattern(gliderPattern);
-    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragin", gliderPattern, gliderPattern.onDragIn.bind(gliderPattern)));
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", gliderPattern, gliderPattern.onDragStart.bind(gliderPattern)));
 }
