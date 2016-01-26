@@ -119,71 +119,46 @@ function boundingBox(x, y, w, h) {
 
 var Pattern = function(x, y, w, h, image, str) {
     this.id = "pattern";
-    Control.call(this, x, y, w, h);
-    this.color = "white";
+    Entity.call(this, x, y, w, h);
     this.dragged = false;
     this.sprite = sprite;
     this.strPattern = str;
     this.sprite = simpleSprite(image);
-    // this.strPattern = "..*\n*.*\n.**";
-    // this.strPattern = "......*..\n.****...*\n....*...*\n........*\n.....*...\n......**.";
-    // this.strPattern = "...****..\n...*..*..\n.***..***\n.*......*\n.*......*\n.***..***\n...*..*..\n...****..\n";
-    // this.strPattern = "..........................*..........\n.......................****....*.....\n..............*.......****.....*.....\n.............*.*......*..*.........**\n............*...**....****.........**\n.**.........*...**.....****..........\n.**.........*...**........*..........\n.............*.*.....................\n..............*......................\n";
-    // this.strPattern = "...*\n....*\n*...*\n.****\n";
-    // this.strPattern = "......*.....\n.....***....\n...***.***..\n...*.....*..\n..**.....**.\n.**.......**\n..**.....**.\n...*.....*..\n...***.***..\n.....***....\n......*.....\n";
-    // this.strPattern = "...........*....................\n...........*...............**...\n.......**.*.***..........**...*.\n.*.**.**.**..*.*...**.****......\n.*...**..*.**..***..*.**..**...*\n.*.**....***.*.***......**..*...\n.........**.*...............*..*\n.*.**....***.*.***......**..*...\n.*...**..*.**..***..*.**..**...*\n.*.**.**.**..*.*...**.****......\n.......**.*.***..........**...*.\n...........*...............**...\n...........*....................\n";
     this.isDraggable = true;
-    this.render = function(engine) {
-        // engine.drawRect(this.x, this.y, this.w, this.h, this.color);
-        // engine.drawText(this.x, this.y + 5, "glider", "grey", "30px verdana");
 
-        engine.drawImage(this.sprite, this.x, this.y);
+    this.select = function() {
     };
 
+    this.deSelect = function() {
+    };
+    
     this.onDragIn = function(x, y, dragStateData) {
         dragStateData.draggedEntityData = this.strPattern;
         console.log(dragStateData);
     };
+
+    this.render = function(engine) {
+        engine.drawImage(this.sprite, this.x, this.y);
+    };
 };
 
-var Control = function(x, y, w, h) {
+var Button = function(x, y, w, h, sprite, startButtonCallback, spriteSelected) {
     Entity.call(this, x, y, w, h);
-    this.selectedColor = "#FFC";
-    this.notSelectedColor = "white";
-    this.selected = false;
-    this.select = function() {
-        this.selected = true;
-        this.select();
-        // this.color = this.selectedColor;
-    };
-    this.deSelect = function() {
-        this.selected = false;
-        this.deSelect();
-        // this.color = this.notSelectedColor;
-        // this.color = this.selectedColor;
-    };
-
-}
-var Button = function(x, y, w, h, sprite1, startButtonCallback, sprite2) {
-    Control.call(this, x, y, w, h);
-    this.color = "white";
-    // this.text = text;
-    this.sprite = sprite1;
-    this.selectedSprite = sprite2;
-    this.currentSprite = sprite1;
+    this.deselectedSprite = sprite;
+    this.selectedSprite = spriteSelected;
+    this.currentSprite = sprite;
     this.onClick = startButtonCallback;
+
     this.select = function() {
         this.currentSprite = this.selectedSprite;
     };
 
     this.deSelect = function() {
-        this.currentSprite = this.sprite;
+        this.currentSprite = this.deselectedSprite;
     };
 
     this.render = function(engine) {
-        // engine.drawRect(this.x, this.y, this.w, this.h, this.color);
         engine.drawImage(this.currentSprite, this.x, this.y);
-        // engine.drawText(this.x, this.y + 5, this.text, "grey", "30px verdana");
     };
 };
 
@@ -211,10 +186,6 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     this.selected = null;
 
     this.addPattern = function(pattern) {
-        // pattern.x = this.buttonX;
-        // pattern.y = this.buttonY + 4 * (this.buttonHeight + 1);
-        // pattern.w = this.buttonWidth;
-        // pattern.h = this.buttonHeight;
         this.components.push(pattern);
     };
 
