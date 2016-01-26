@@ -156,10 +156,15 @@ window.onload = function() {
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragover", cellManager, cellManager.onDragOver.bind(cellManager)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragend", cellManager, cellManager.onDragEnd.bind(cellManager)));
 
-    var pattern = new Pattern(0, 0, 0, 0);
+    var pattern = new Pattern(1, 30, 6, 6, "images/osc-star.png", "......*.....\n.....***....\n...***.***..\n...*.....*..\n..**.....**.\n.**.......**\n..**.....**.\n...*.....*..\n...***.***..\n.....***....\n......*.....\n");
     patternPanel.addPattern(pattern);
+
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragin", pattern, pattern.onDragIn.bind(pattern)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", patternPanel, patternPanel.onDragStart.bind(patternPanel)));
+
+    var p2 = new Pattern(8, 30, 6, 6, "images/glider.png", "..*\n*.*\n.**");
+    patternPanel.addPattern(p2);
+    engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragin", p2, p2.onDragIn.bind(p2)));
     // var startButton = new Button(100, 60, 10, 5, "white", start);
     // engine.addEntityToScreen(startButton);
     // engine.addMouseEventSubscribtion(new MouseEventSubscribtion("click", startButton, startButton.onClick.bind(startButton)));
