@@ -64,7 +64,7 @@ var Pattern = function(x, y, str, scaleFactor) {
     };
 
     this.render = function(engine) {
-        var borderWidth = 0.3;
+        var borderWidth = 0.5;
         engine.drawRect(
             this.x - borderWidth,
             this.y - borderWidth,

@@ -3,20 +3,20 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
     Entity.call(this, 0, 0, w, h);
     this.color = "#CCC";
     this.components = [];
-    this.buttonX = this.x + 1;
+    this.buttonX = this.x + 3;
     this.buttonY = this.y + 1;
-    this.buttonWidth = 9;
-    this.buttonHeight = 9;
-    this.startButton = new Button(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight, sprite('images/play.png',-7, 3, defaultBoundingBox()), startButtonCallback, sprite('images/play_large.png', -12, -2, defaultBoundingBox()));
+    this.buttonWidth = 15;
+    this.buttonHeight = 15;
+    this.startButton = new Button(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight, sprite('images/play.png',-3, 3, defaultBoundingBox()), startButtonCallback, sprite('images/play_large.png', -8, -2, defaultBoundingBox()));
     this.components.push(this.startButton);
 
-    this.stopButton = new Button(this.buttonX + this.buttonWidth, this.buttonY, this.buttonWidth, this.buttonHeight, sprite('images/pause.png', -3, 3, defaultBoundingBox()), stopButtonCallback, sprite('images/pause_large.png', -6, 0, defaultBoundingBox()));
+    this.stopButton = new Button(this.buttonX, this.buttonY + 1 * (this.buttonHeight), this.buttonWidth, this.buttonHeight, sprite('images/pause.png', -3, 3, defaultBoundingBox()), stopButtonCallback, sprite('images/pause_large.png', -6, 0, defaultBoundingBox()));
     this.components.push(this.stopButton);
 
-    this.clearButton = new Button(this.buttonX, this.buttonY + 1 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, sprite('images/stop.png', 0, 0, defaultBoundingBox()), clearButtonCallback, sprite('images/stop_large.png', -2, -2, defaultBoundingBox()));
+    this.clearButton = new Button(this.buttonX, this.buttonY + 2 * (this.buttonHeight), this.buttonWidth, this.buttonHeight, sprite('images/stop.png', 0, 0, defaultBoundingBox()), clearButtonCallback, sprite('images/stop_large.png', -2, -2, defaultBoundingBox()));
     this.components.push(this.clearButton);
 
-    this.randButton = new Button(this.buttonX + this.buttonWidth, this.buttonY + 1 * (this.buttonHeight + 1), this.buttonWidth, this.buttonHeight, sprite('images/dice.png', 0, 0, defaultBoundingBox()), randButtonCallback, sprite('images/dice_large.png', -3, -3, defaultBoundingBox()));
+    this.randButton = new Button(this.buttonX, this.buttonY + 3 * (this.buttonHeight), this.buttonWidth, this.buttonHeight, sprite('images/dice.png', 0, 0, defaultBoundingBox()), randButtonCallback, sprite('images/dice_large.png', -3, -3, defaultBoundingBox()));
     this.components.push(this.randButton);
 
     this.selected = null;
@@ -80,8 +80,9 @@ var PatternPanel = function(w, h, startButtonCallback, stopButtonCallback, clear
 
     this.render = function(engine) {
         engine.drawRect(this.x, this.y, this.w, this.h, this.color);
-        engine.drawText(this.buttonX + 2, this.buttonY + this.buttonHeight* 2 + 5, "Drag & drop", "black", "12px verdana");
-        engine.drawText(this.buttonX + 3, this.buttonY + this.buttonHeight* 2 + 8, "patterns:", "black", "12px verdana");
+        engine.drawText(this.buttonX, this.buttonY + 4 * (this.buttonHeight) + 5, "Drag", "black", "12px verdana");
+        engine.drawText(this.buttonX, this.buttonY + 4 * (this.buttonHeight) + 10, "& drop", "black", "12px verdana");
+        engine.drawText(this.buttonX, this.buttonY + 4 * (this.buttonHeight) + 15, "patterns", "black", "12px verdana");
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].render(engine);
         }

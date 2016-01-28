@@ -2,14 +2,14 @@
  */
 window.onload = function() {
 
-    var gridWidth = 6;
-    var gridHeight = 6;
+    var gridWidth = 3;//6;
+    var gridHeight = 3;//6;
 
-    var COLS = 200;
-    var ROWS = 140;
+    var COLS = 400;//200;
+    var ROWS = 260;//140;
     var DELAY = 100;
 
-    var PATTERN_PANEL_WIDTH = 20;
+    var PATTERN_PANEL_WIDTH = 22;
 
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
@@ -153,16 +153,18 @@ window.onload = function() {
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragend", cellManager, cellManager.onDragEnd.bind(cellManager)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", patternPanel, patternPanel.onDragStart.bind(patternPanel)));
     
-    function generatePattern() {
-        function verticallines(x, y) {
-            //return y % 5 == 0;
-        }
         function maindiaglines(x, y) {
             return (x + y) % 15 == 0;
         }
+
+        function verticallines(x, y) {
+            return y % 5 == 0;
+        }
+        
         function secondarydiaglines(x, y) {
             return (-x + y) % 1 == 0;
         }
+
         function circles(x, y) {
             var r = 60;
             var s = 10;
@@ -182,13 +184,14 @@ window.onload = function() {
             return false ;
         }
 
-        var xh = 10;
-        var yh = 10;
+    function generateSquarePattern() {
+        var xh = 100;
+        var yh = 100;
         var s = "";
         for (var y = 0; y < yh; y++) {
             for (var x = 0; x < xh; x++) {
-                if (verticallines(x, y)
-                    || maindiaglines(x, y)
+                if //(verticallines(x, y)
+                    (maindiaglines(x, y)
                     || secondarydiaglines(x, y)) {
                     s += "*";
                 } else {
@@ -197,10 +200,65 @@ window.onload = function() {
             }
             s += "\n";
         }
-
-        return {scaleFactor: 1, str: s};
+        return {scaleFactor: 0.18, str: s};
     }
 
+    function generateDiagonalPattern() {
+        var xh = 120;
+        var yh = 120;
+        var s = "";
+        for (var y = 0; y < yh; y++) {
+            for (var x = 0; x < xh; x++) {
+                if 
+                    (maindiaglines(x, y))
+                     {
+                    s += "*";
+                } else {
+                    s += ".";
+                }
+            }
+            s += "\n";
+        }
+        return {scaleFactor: 0.15, str: s};
+    }
+
+    function generateCirclePattern() {
+        var xh = 120;
+        var yh = 120;
+        var s = "";
+        for (var y = 0; y < yh; y++) {
+            for (var x = 0; x < xh; x++) {
+                if //(verticallines(x, y)
+                    (circles(x, y))
+                     {  
+                    s += "*";
+                } else {
+                    s += ".";
+                }
+            }
+            s += "\n";
+        }
+        return {scaleFactor: 0.15, str: s};
+    }
+
+    function generatePattern() {
+        var xh = 120;
+        var yh = 120;
+        var s = "";
+        for (var y = 0; y < yh; y++) {
+            for (var x = 0; x < xh; x++) {
+                if 
+                   (verticallines(x, y))
+                     {
+                    s += "*";
+                } else {
+                    s += ".";
+                }
+            }
+            s += "\n";
+        }
+        return {scaleFactor: 0.15, str: s};
+    }
     var patterns = [
         {scaleFactor: 0.8, str: ".......\n....*..\n.....*.\n.*...*.\n..****.\n.......\n"},
         {scaleFactor: 1, str: ".....\n...*.\n.*.*.\n..**.\n.....\n"},
@@ -234,17 +292,20 @@ window.onload = function() {
         {scaleFactor: 0.56, str: "................................\n............*..*................\n...........*....................\n...........*...*................\n...**......****.................\n..****..........................\n.**.**..........................\n..**.....**.***.................\n........*.....**.......*....***.\n.......**.......*......*....*.*.\n........*.....**.......*....***.\n..**.....**.***.................\n.**.**..........................\n..****..........................\n...**......****.................\n...........*...*................\n...........*....................\n............*..*................\n................................\n"},
         {scaleFactor: 0.33, str: "......................................................\n.**................................................**.\n..*................................................*..\n..*.*.....................**.....................*.*..\n...**........*............**............**.......**...\n............**..........................*.*...........\n...........**.............................*...........\n............**..**......................***...........\n......................................................\n......................................................\n......................................................\n............**..**......................***...........\n...........**.............................*...........\n............**..........................*.*...........\n...**........*............**............**.......**...\n..*.*.....................**.....................*.*..\n..*................................................*..\n.**................................................**.\n......................................................\n"},
         {scaleFactor: 0.27, str: "..................................................................\n....*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*....\n....**********************************************************....\n..................................................................\n..**************************************************************..\n.*.................................*.......*..........*.........*.\n.****.**.*..*****..***************....*****....*******...********.\n.....*...**.....**.......*.......*........*............*..........\n.******..*..*****..*****....******....*****....*******...********.\n.*......................*.........*........*..........*.........*.\n..**************************************************************..\n..................................................................\n....**********************************************************....\n....*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*....\n..................................................................\n"},
+        generateSquarePattern(),
+        generateDiagonalPattern(),
+        generateCirclePattern(),
         generatePattern(),
     ]
 
     // place patterns
     var f = function() {
-        var y = 30;
+        var y = 80;
         var xStart = 1;
         var x = xStart;
         var heightPatternInRow = null;
         var horizontalGapBetweenPatterns = 0.5;
-        var verticalGapBetweenPatterns = 0.5;
+        var verticalGapBetweenPatterns = 1;
         var horizontalBoundary = patternPanel.w;
         var patternString;
         var patternScaleFactor;
