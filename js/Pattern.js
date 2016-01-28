@@ -28,9 +28,9 @@ var convertStringPatternToCells = function(str) {
     return transpose(rows);
 }
 
-var Pattern = function(x, y, str) {
+var Pattern = function(x, y, str, scaleFactor) {
     this.id = "pattern";
-    this.scaleFactor = 0.5;
+    this.scaleFactor = scaleFactor;
 
     this.getWidth = function() {
         return this.cells.length * this.scaleFactor;
