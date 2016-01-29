@@ -2,15 +2,14 @@
  */
 window.onload = function() {
 
-    var gridWidth = 3;//6;
-    var gridHeight = 3;//6;
+    var gridWidth = 3;
+    var gridHeight = 3;
 
-    var COLS = 400;//200;
-    var ROWS = 260;//140;
+    var COLS = 400;
+    var ROWS = 260;
     var DELAY = 100;
 
     var PATTERN_PANEL_WIDTH = 22;
-
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
     engine.load();
@@ -89,7 +88,6 @@ window.onload = function() {
             for (var y = 0; y < ROWS; y++) {
                 cell = cells[x][y];
                 count = cell.getActiveNeighbours();
-                // newStates[x][y] = (cell.alive && (count === 2 || count === 3)) || (!cell.alive && count === 3);
                 if (cell.alive) {
                     newStates[x][y] = (count === 2 || count === 3);
                 } else {
@@ -101,8 +99,6 @@ window.onload = function() {
             for (var j = 0; j < ROWS; j++) {
                 cells[i][j].alive = newStates[i][j];
                 cells[i][j].color = newStates[i][j] ? 255 : 0;
-                
-
             }
         }
     }
@@ -116,6 +112,7 @@ window.onload = function() {
     }
 
     function clear() {
+        stop();
         for (var x = 0; x < COLS; x++) {
             for (var y = 0; y < ROWS; y++) {
                 cells[x][y].alive = false;
@@ -166,10 +163,10 @@ window.onload = function() {
         }
 
         function circles(x, y) {
-            var r = 60;
-            var s = 10;
-            var t = 20;
-            var dx = 60;
+            var r = 60; // radius
+            var s = 10; // line width
+            var t = 20; // gap between lines
+            var dx = 60; 
             var dy = 60;
             var x1 = x - dx;
             var y1 = y - dy;
@@ -190,8 +187,7 @@ window.onload = function() {
         var s = "";
         for (var y = 0; y < yh; y++) {
             for (var x = 0; x < xh; x++) {
-                if //(verticallines(x, y)
-                    (maindiaglines(x, y)
+                if (maindiaglines(x, y)
                     || secondarydiaglines(x, y)) {
                     s += "*";
                 } else {
@@ -209,9 +205,7 @@ window.onload = function() {
         var s = "";
         for (var y = 0; y < yh; y++) {
             for (var x = 0; x < xh; x++) {
-                if 
-                    (maindiaglines(x, y))
-                     {
+                if (maindiaglines(x, y)) {
                     s += "*";
                 } else {
                     s += ".";
@@ -228,9 +222,7 @@ window.onload = function() {
         var s = "";
         for (var y = 0; y < yh; y++) {
             for (var x = 0; x < xh; x++) {
-                if //(verticallines(x, y)
-                    (circles(x, y))
-                     {  
+                if (circles(x, y)) {  
                     s += "*";
                 } else {
                     s += ".";
@@ -241,15 +233,13 @@ window.onload = function() {
         return {scaleFactor: 0.15, str: s};
     }
 
-    function generatePattern() {
+    function generateHorizontalLinePattern() {
         var xh = 120;
         var yh = 120;
         var s = "";
         for (var y = 0; y < yh; y++) {
             for (var x = 0; x < xh; x++) {
-                if 
-                   (verticallines(x, y))
-                     {
+                if (verticallines(x, y)) {
                     s += "*";
                 } else {
                     s += ".";
@@ -295,7 +285,7 @@ window.onload = function() {
         generateSquarePattern(),
         generateDiagonalPattern(),
         generateCirclePattern(),
-        generatePattern(),
+        generateHorizontalLinePattern(),
     ]
 
     // place patterns

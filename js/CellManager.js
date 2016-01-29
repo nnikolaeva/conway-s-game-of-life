@@ -5,11 +5,6 @@ var CellManager = function(cells, dx, w, h) {
     this.cells = cells;
     this.selectedCell;
     this.onMouseMove = function(x, y) {
-        // if (typeof(this.selectedCell) !== "undefined") {
-        //     this.selectedCell.color = this.selectedCell.alive ? 255 : 0;
-        // }
-        // cells[x][y].color = 200;
-        // this.selectedCell = cells[x][y];
     }
 
     this.render = function(engine) {
@@ -29,9 +24,11 @@ var CellManager = function(cells, dx, w, h) {
         var c;
         var px = 0;
         var py = 0;
+        var maxX = cells.length;
+        var maxY = cells[0].length;
         for (var i in str) {
             c = str[i];
-            if (c === "*") {
+            if (c === "*" && x + px < maxX && y + py < maxY) {
                 cells[x + px][y + py].color = 200;
                 this.draggedTrace.push(cells[x + px][y + py]);
                 px ++;
