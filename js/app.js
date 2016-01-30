@@ -12,7 +12,23 @@ window.onload = function() {
     var PATTERN_PANEL_WIDTH = 22;
 
     var engine = new Engine(gridWidth, gridHeight, COLS, ROWS);
-    engine.load();
+
+    function loadResources(engine) {
+         Resources.load([
+             'images/play.png',
+             'images/play_large.png',
+             'images/pause.png',
+             'images/pause_large.png',
+             'images/stop.png',
+             'images/stop_large.png',
+             'images/dice.png',
+             'images/dice_large.png'
+         ]);
+         engine.lastTime = Date.now();
+         Resources.onReady(engine.start.bind(engine));
+    }
+
+    loadResources(engine);
 
     document.addEventListener("click", function(event) {
         engine.handleMouseEvent("click", event);
@@ -28,18 +44,18 @@ window.onload = function() {
     });
 
     var cells = [];
+    var cellsLength = COLS - PATTERN_PANEL_WIDTH;
 
-    for (var x = 0; x < COLS; x++) {
+    for (var x = 0; x < cellsLength; x++) {
         cells[x] = [];
         for (var y = 0; y < ROWS; y++) {
             cells[x][y] = new Cell(Math.random() < 0.5);
         }
     }
-    console.log(cells.length);
 
     // add neighbours to each cell
     var cell;
-    for (var x = 0; x < COLS; x++) {
+    for (var x = 0; x < cellsLength; x++) {
         for (var y = 0; y < ROWS; y++) {
             cell = cells[x][y];
             addNeigbours(cell, x, y);
@@ -52,13 +68,13 @@ window.onload = function() {
                 if (dx === 0 && dy === 0) {
                     continue;
                 }
-                cell.addNeighbour(getCell(wrap(x + dx, COLS), wrap(y + dy, ROWS)));
+                cell.addNeighbour(getCell(wrap(x + dx, cellsLength), wrap(y + dy, ROWS)));
             }
         }
     }
 
     function getCell(x, y) {
-        if (x < 0 || y < 0 || x >= COLS || y >= ROWS) {
+        if (x < 0 || y < 0 || x >= cellsLength || y >= ROWS) {
             throw "(x,y) is out of bounds: " + x + ", " + y;
         }
         var cell = cells[x][y];
@@ -77,14 +93,14 @@ window.onload = function() {
     }
 
     var newStates = []
-    for (var x = 0; x < COLS; x++) {
+    for (var x = 0; x < cellsLength; x++) {
         newStates[x] = new Array(ROWS);
     }
 
     var count;
     var cell;
     function createNewGeneration() {
-        for (var x = 0; x < COLS; x++) {
+        for (var x = 0; x < cellsLength; x++) {
             for (var y = 0; y < ROWS; y++) {
                 cell = cells[x][y];
                 count = cell.getActiveNeighbours();
@@ -95,7 +111,7 @@ window.onload = function() {
                 }
             }
         }
-        for (var i = 0; i < COLS; i++) {
+        for (var i = 0; i < cellsLength; i++) {
             for (var j = 0; j < ROWS; j++) {
                 cells[i][j].alive = newStates[i][j];
                 cells[i][j].color = newStates[i][j] ? 255 : 0;
@@ -113,7 +129,7 @@ window.onload = function() {
 
     function clear() {
         stop();
-        for (var x = 0; x < COLS; x++) {
+        for (var x = 0; x < cellsLength; x++) {
             for (var y = 0; y < ROWS; y++) {
                 cells[x][y].alive = false;
                 cells[x][y].color = 0;
@@ -123,7 +139,7 @@ window.onload = function() {
     }
 
     function rand() {
-        for (var x = 0; x < COLS; x++) {
+        for (var x = 0; x < cellsLength; x++) {
             for (var y = 0; y < ROWS; y++) {
                 cells[x][y].alive = Math.random() < 0.5;
                 cells[x][y].color = cells[x][y].alive ? 255 : 0;
@@ -150,45 +166,44 @@ window.onload = function() {
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragend", cellManager, cellManager.onDragEnd.bind(cellManager)));
     engine.addMouseEventSubscribtion(new MouseEventSubscribtion("dragstart", patternPanel, patternPanel.onDragStart.bind(patternPanel)));
     
-        function maindiaglines(x, y) {
-            return (x + y) % 15 == 0;
-        }
+    function maindiaglines(x, y) {
+        return (x + y) % 15 == 0;
+    }
 
-        function verticallines(x, y) {
-            return y % 5 == 0;
-        }
-        
-        function secondarydiaglines(x, y) {
-            return (-x + y) % 1 == 0;
-        }
+    function verticallines(x, y) {
+        return y % 5 == 0;
+    }
+    
+    function secondarydiaglines(x, y) {
+        return (-x + y) % 1 == 0;
+    }
 
-        function circles(x, y) {
-            var r = 60; // radius
-            var s = 10; // line width
-            var t = 20; // gap between lines
-            var dx = 60; 
-            var dy = 60;
-            var x1 = x - dx;
-            var y1 = y - dy;
-            var d = (x1 * x1 + y1 * y1);
-            while (r > 0) {
-                if (d < r*r && d > (r - s) * (r - s)) {
-                    return true;
-                } else {
-                    r = r - t;
-                }
+    function circles(x, y) {
+        var r = 60; // radius
+        var s = 10; // line width
+        var t = 20; // gap between lines
+        var dx = 60; 
+        var dy = 60;
+        var x1 = x - dx;
+        var y1 = y - dy;
+        var d = (x1 * x1 + y1 * y1);
+        while (r > 0) {
+            if (d < r*r && d > (r - s) * (r - s)) {
+                return true;
+            } else {
+                r = r - t;
             }
-            return false ;
         }
+        return false ;
+    }
 
-    function generateSquarePattern() {
-        var xh = 100;
-        var yh = 100;
+    function generatePattern(maxX, maxY, condition, scaleFactor) {
+        var maxX = maxX;
+        var maxY = maxY;
         var s = "";
-        for (var y = 0; y < yh; y++) {
-            for (var x = 0; x < xh; x++) {
-                if (maindiaglines(x, y)
-                    || secondarydiaglines(x, y)) {
+        for (var y = 0; y < maxY; y++) {
+            for (var x = 0; x < maxX; x++) {
+                if (condition(x, y)) {
                     s += "*";
                 } else {
                     s += ".";
@@ -196,59 +211,25 @@ window.onload = function() {
             }
             s += "\n";
         }
-        return {scaleFactor: 0.18, str: s};
+        return {scaleFactor: scaleFactor, str: s};
+    }
+
+    function generateSquarePattern() {
+        return generatePattern(100, 100, function() {return true;}, 0.18);
     }
 
     function generateDiagonalPattern() {
-        var xh = 120;
-        var yh = 120;
-        var s = "";
-        for (var y = 0; y < yh; y++) {
-            for (var x = 0; x < xh; x++) {
-                if (maindiaglines(x, y)) {
-                    s += "*";
-                } else {
-                    s += ".";
-                }
-            }
-            s += "\n";
-        }
-        return {scaleFactor: 0.15, str: s};
+        return generatePattern(120, 120, maindiaglines, 0.15);
     }
 
     function generateCirclePattern() {
-        var xh = 120;
-        var yh = 120;
-        var s = "";
-        for (var y = 0; y < yh; y++) {
-            for (var x = 0; x < xh; x++) {
-                if (circles(x, y)) {  
-                    s += "*";
-                } else {
-                    s += ".";
-                }
-            }
-            s += "\n";
-        }
-        return {scaleFactor: 0.15, str: s};
+        return generatePattern(120, 120, circles, 0.15);
     }
 
     function generateHorizontalLinePattern() {
-        var xh = 120;
-        var yh = 120;
-        var s = "";
-        for (var y = 0; y < yh; y++) {
-            for (var x = 0; x < xh; x++) {
-                if (verticallines(x, y)) {
-                    s += "*";
-                } else {
-                    s += ".";
-                }
-            }
-            s += "\n";
-        }
-        return {scaleFactor: 0.15, str: s};
+        return generatePattern(120, 120, verticallines, 0.15);
     }
+
     var patterns = [
         {scaleFactor: 0.8, str: ".......\n....*..\n.....*.\n.*...*.\n..****.\n.......\n"},
         {scaleFactor: 1, str: ".....\n...*.\n.*.*.\n..**.\n.....\n"},
