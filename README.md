@@ -5,7 +5,7 @@ Conway’s game of life implementation on using in-house game engine, supports d
 ####HOW TO RUN THE APPLICATION
 
 1. Download all files and open index.html in your favorite browser.
-2. Or view the application at http://nnikolaeva.github.io/conway-s-game-of-life
+2. Or view the application at http://nnikolaeva.github.io/Conway-s-Game-of-Life
 
 ####RULES
 The universe of the Game of Life is grid of square cells, each of which is in one of two possible states, alive or dead. Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each step in time, the following transitions occur:
